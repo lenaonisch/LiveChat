@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace LiveChat.Models
+namespace Models.ModelsMVC
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {

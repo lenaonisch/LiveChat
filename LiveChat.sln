@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveChat", "LiveChat\LiveChat.csproj", "{8DAC85F5-4D59-4FDE-A095-0A79FE350C7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DraftDBDiagram", "DraftDBDiagram\DraftDBDiagram.csproj", "{F336ECB5-CA74-47D3-8136-517D328C2B1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{63B40D81-F270-4911-BD45-493405490B97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{8DAC85F5-4D59-4FDE-A095-0A79FE350C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DAC85F5-4D59-4FDE-A095-0A79FE350C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DAC85F5-4D59-4FDE-A095-0A79FE350C7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F336ECB5-CA74-47D3-8136-517D328C2B1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F336ECB5-CA74-47D3-8136-517D328C2B1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F336ECB5-CA74-47D3-8136-517D328C2B1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F336ECB5-CA74-47D3-8136-517D328C2B1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63B40D81-F270-4911-BD45-493405490B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B40D81-F270-4911-BD45-493405490B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B40D81-F270-4911-BD45-493405490B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B40D81-F270-4911-BD45-493405490B97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
