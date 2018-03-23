@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveChat", "LiveChat\LiveCh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{63B40D81-F270-4911-BD45-493405490B97}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB", "DB\DB.csproj", "{3BD6DCE8-0FE9-4CCE-AACF-C45580FC3608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{63B40D81-F270-4911-BD45-493405490B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63B40D81-F270-4911-BD45-493405490B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63B40D81-F270-4911-BD45-493405490B97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BD6DCE8-0FE9-4CCE-AACF-C45580FC3608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BD6DCE8-0FE9-4CCE-AACF-C45580FC3608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BD6DCE8-0FE9-4CCE-AACF-C45580FC3608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BD6DCE8-0FE9-4CCE-AACF-C45580FC3608}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
