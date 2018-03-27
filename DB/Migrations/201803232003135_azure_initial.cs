@@ -1,9 +1,9 @@
-namespace LiveChat.Migrations
+namespace DB.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialModel : DbMigration
+    public partial class azure_initial : DbMigration
     {
         public override void Up()
         {

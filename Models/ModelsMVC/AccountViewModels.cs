@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace LiveChat.Models
+namespace Models.ModelsMVC
 {
     public class ExternalLoginConfirmationViewModel
     {
