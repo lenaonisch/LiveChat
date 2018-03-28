@@ -7,6 +7,7 @@ namespace Models.ChatModels
 {
     public class Chat
     {
+        public int ID { get; set; }
         public DateTime StartDateTime { get; set; }
 
         /// <summary>
@@ -14,16 +15,7 @@ namespace Models.ChatModels
         /// </summary>
         public byte Duration { get; set; }
 
-        public List<Message> Messages
-        {
-            get
-            {
-                throw new System.NotImplementedException();
-            }
-
-            set
-            {
-            }
-        }
+        public List<Message> Messages { get; set; }
+        
     }
 }

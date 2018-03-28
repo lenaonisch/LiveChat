@@ -8,6 +8,7 @@ namespace Models.ChatModels
 {
     public class UserProfile
     {
+        public int ID { get; set; }
         public ModelsMVC.ApplicationUser User { get; set; } // contains Role here: User (end-users) / Operator / 'SuperOperator'
         /// <summary>
         /// this class may be used in SignalRMvc.Hubs.ChatHub in Users property:
