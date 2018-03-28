@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.ChatModels
 {
@@ -10,6 +11,7 @@ namespace Models.ChatModels
     /// </summary>
     public class Company
     {
+        [Key]
         public string Name { get; set; }
     }
 }
