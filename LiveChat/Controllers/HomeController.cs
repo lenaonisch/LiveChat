@@ -30,5 +30,10 @@ namespace LiveChat.Controllers
         {
             return View();
         }
+
+        public ActionResult OperatorChat()
+        {
+            return View();
+        }
     }
 }

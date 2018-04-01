@@ -13,5 +13,10 @@ namespace Models.ChatModels
     {
         [Key]
         public string Name { get; set; }
+
+        public Company(string name)
+        {
+            this.Name = name;
+        }
     }
 }

@@ -1,20 +1,42 @@
-﻿@{
-    ViewBag.Title = "Chat";
-}
-<h2>Chat</h2>
-@*<div id="namediv">
-    <h7>Name</h7>
+﻿@using System.Threading;
+@using Models.ChatModels;
+@{
+    ViewBag.Title = "OperatorChat";
     
-</div>
-<div id="groupdiv">
+}
+<h2>OperatorChat</h2>
+<input id="displayname" type="hidden" />
+<div>
     <h7>Group</h7>
     <input id="displaygroup" />
 </div>
-<input type="button" id="registeruser" value="Register" />*@
+<input type="button" id="registeruser" value="Register" />
 <div class="container">
     <input type="text" id="message" />
     <input type="button" id="sendmessage" value="Send" />
-    <ul id="discussion"></ul>
+    <table width="1000" cellspacing="0" cellpadding="5">
+        <tr>
+            <td width="15%" valign="top">
+                <ul id="discussion0"></ul>
+            </td>
+            <td width="15%" valign="top">
+                <ul id="discussion1"></ul>
+            </td>
+            <td width="15%" valign="top">
+                <ul id="discussion2"></ul>
+            </td>
+            <td width="15%" valign="top">
+                <ul id="discussion3"></ul>
+            </td>
+            <td width="15%" valign="top">
+                <ul id="discussion4"></ul>
+            </td>
+            <td width="15%" valign="top">
+                <ul id="discussion5"></ul>
+            </td>
+        </tr>
+    </table>
+
 </div>
 @section scripts {
     <!--Script references. -->
@@ -32,7 +54,7 @@
             //RECEIVE
             chat.client.addNewMessageToPage = function (name, group, message) {
                 // Add the message to the page.
-                $('#discussion').append('<li><strong>' + htmlEncode(name)
+                $('#discussion' + group).append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
             };
 
@@ -43,17 +65,18 @@
             $('#message').focus();
             // Start the connection.
             $.connection.hub.start().done(function () {
+
                 $('#sendmessage').click(function () {
                     // Call the Send method on the hub.
                     //SEND
-                    chat.server.send($('#message').val());
+                    chat.server.send($('#displaygroup').val(), $('#message').val());
                     // Clear text box and reset focus for next comment.
                     $('#message').val('').focus();
                 });
 
                 //$('#registeruser').click(function () {
                 //    // Call the Send method on the hub.
-                //    chat.server.register($('#displayname').val(), $('#displaygroup').val());
+                //    chat.server.registerOperator($('#displayname').val(), $('#displaygroup').val());
                 //    // Clear text box and reset focus for next comment.
                 //    $('#message').focus();
                 //});
