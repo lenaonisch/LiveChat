@@ -13,5 +13,12 @@ namespace Models.ChatModels
         [Required]
         public string Text { get; set; }
         public BaseUser User { get; set; }
+
+        public Message(string message, BaseUser user, DateTime dateTime)
+        {
+            Text = message;
+            User = user;
+            DateTime = dateTime;
+        }
     }
 }

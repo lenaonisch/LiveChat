@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models.ChatModels
 {
@@ -11,7 +12,14 @@ namespace Models.ChatModels
     /// </summary>
     public class Company
     {
-        [Key]
+        public int ID { get; set; }
+        [StringLength(150)]
+        [Index(IsUnique = true)]
         public string Name { get; set; }
+
+        public Company(string name)
+        {
+            this.Name = name;
+        }
     }
 }

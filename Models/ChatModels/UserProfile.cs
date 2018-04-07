@@ -20,7 +20,6 @@ namespace Models.ChatModels
         /// <summary>
         /// As soon as chat will be supplied for multiple companies, this field should be stored not only for operators, but for registered end-users, too
         /// </summary>
-        public Company Company { get; set; }
         public Contact Contact { get; set; }
 
         /// <summary>

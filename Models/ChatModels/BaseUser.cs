@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 
@@ -14,8 +15,22 @@ namespace Models.ChatModels
     {
         public int ID { get; set; }
         /// <summary>
+        /// ConnectionID of user
+        /// </summary>
+        [NotMapped]
+        public string ConnectionID { get; set; }
+
+        /// <summary>
         /// For unregistered end-users may be formed from DateTime
         /// </summary>
-        public int NickName { get; set; }
+        public string NickName { get; set; }
+        public Company Company { get; set; }
+
+        public BaseUser(string nickname, string connectID)
+        {
+            this.NickName = nickname;
+            this.ConnectionID = connectID;
+        }
+
     }
 }

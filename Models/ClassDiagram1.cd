@@ -3,36 +3,42 @@
   <Class Name="Models.ChatModels.BaseUser">
     <Position X="3" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAgAAgAAAAAAAAAAAAAAEAAAAABAAAAAA=</HashCode>
       <FileName>ChatModels\BaseUser.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Company" />
+    </ShowAsAssociation>
   </Class>
   <Class Name="Models.ChatModels.Chat">
-    <Position X="0.5" Y="0.75" Width="1.5" />
+    <Position X="0.5" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <HashCode>AAQAAAAAAAACkAAAAAAAAAAAAAAAAAAAAAAABQAAAAA=</HashCode>
       <FileName>ChatModels\Chat.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Company" />
+    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Messages" />
     </ShowAsCollectionAssociation>
   </Class>
-  <Class Name="Models.ChatModels.Company" Collapsed="true">
-    <Position X="7.5" Y="2.5" Width="1.5" />
+  <Class Name="Models.ChatModels.Company">
+    <Position X="3.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ChatModels\Company.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Models.ChatModels.Contact">
-    <Position X="3" Y="2.75" Width="1.5" />
+    <Position X="7.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAgAQAAAgAAAAAAAAAAEAAAAAIAAAAAAAIAIAAAAAA=</HashCode>
+      <HashCode>AAAgAQAAAgAAgAAAAAAAEAAAAAIAAAAAAAIAIAAAAAA=</HashCode>
       <FileName>ChatModels\Contact.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Models.ChatModels.Message">
-    <Position X="0.5" Y="2.5" Width="1.5" />
+    <Position X="0.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAgAAAAAAAAAAAAAAAAAQAAAAACAAAAAA=</HashCode>
       <FileName>ChatModels\Message.cs</FileName>
@@ -44,14 +50,13 @@
   <Class Name="Models.ChatModels.UserProfile">
     <Position X="5.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAQBAAAAAAAAAAAACAQAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <HashCode>AAQBAAAAAAAAgAAACAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ChatModels\UserProfile.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Contact" />
       <Property Name="User" />
-      <Property Name="Company" />
       <Property Name="BaseUser" />
+      <Property Name="Contact" />
     </ShowAsAssociation>
   </Class>
   <Class Name="Models.ModelsMVC.ApplicationUser">
