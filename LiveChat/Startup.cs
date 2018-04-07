@@ -11,14 +11,14 @@ namespace LiveChat
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            app.MapSignalR();
-            /*app.Map("/signalr", map =>
+            
+            app.Map("/signalr", map =>
             {
                 map.UseCors(CorsOptions.AllowAll);
                 var hubConfiguration = new HubConfiguration { };
                 hubConfiguration.EnableDetailedErrors = true;
                 map.RunSignalR(hubConfiguration);
-            });*/
+            });
         }
     }
 }
