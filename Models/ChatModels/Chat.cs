@@ -29,5 +29,11 @@ namespace Models.ChatModels
             StartDateTime = DateTime.Now;
             Messages = new List<Message>();
         }
+
+        //public void AddMessage(string text, BaseUser bu)
+        //{
+        //    Messages.Add(new Message(text, bu, DateTime.Now));
+        //}
+
     }
 }

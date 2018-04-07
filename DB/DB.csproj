@@ -66,10 +66,6 @@
     <Compile Include="Migrations\201803281919310_ChatModels.Designer.cs">
       <DependentUpon>201803281919310_ChatModels.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201804071121445_CompanyAssignment.cs" />
-    <Compile Include="Migrations\201804071121445_CompanyAssignment.Designer.cs">
-      <DependentUpon>201804071121445_CompanyAssignment.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -79,9 +75,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803281919310_ChatModels.resx">
       <DependentUpon>201803281919310_ChatModels.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804071121445_CompanyAssignment.resx">
-      <DependentUpon>201804071121445_CompanyAssignment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
