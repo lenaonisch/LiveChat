@@ -17,7 +17,7 @@
             data-content=" 
                 <input type='text' id='message' />
                 <input type='button' id='sendmessage' value='Send' />
-                <ul id='discussion'></ul>
+                <dl id='discussion' style='height:200px; overflow-y: scroll'></dl>
             ">Chat!
 </button>
 </div>
@@ -42,8 +42,8 @@
                 //RECEIVE
                 chat.client.addNewMessageToPage = function (name, group, message) {
                     // Add the message to the page.
-                    $('#discussion').append('<li><strong>' + htmlEncode(name)
-                        + '</strong>: ' + htmlEncode(message) + '</li>');
+                    $('#discussion').append('<dt><strong>' + htmlEncode(name)
+                        + '</strong>: ' + htmlEncode(message) + '</dt>');
                 };
                 
 
