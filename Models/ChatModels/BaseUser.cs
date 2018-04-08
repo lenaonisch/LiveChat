@@ -26,9 +26,14 @@ namespace Models.ChatModels
         public string NickName { get; set; }
         public Company Company { get; set; }
 
-        public BaseUser(string nickname, string connectID)
+        public BaseUser() { }
+        public BaseUser(string nickname, Company company)
         {
-            this.NickName = nickname;
+            NickName = nickname;
+            Company = company;
+        }
+        public BaseUser(string nickname, Company company, string connectID) : this(nickname, company)
+        {
             this.ConnectionID = connectID;
         }
 

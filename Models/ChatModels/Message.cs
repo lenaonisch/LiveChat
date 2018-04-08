@@ -14,6 +14,7 @@ namespace Models.ChatModels
         public string Text { get; set; }
         public BaseUser User { get; set; }
 
+        public Message() { }
         public Message(string message, BaseUser user, DateTime dateTime)
         {
             Text = message;

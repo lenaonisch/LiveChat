@@ -15,6 +15,8 @@ namespace DB
 
         public DbSet<Models.ChatModels.UserProfile> UserProfiles { get; set; }
         public DbSet<Models.ChatModels.Chat> Chats { get; set; }
+        public DbSet<Models.ChatModels.Company> Companies { get; set; }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();

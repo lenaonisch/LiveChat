@@ -17,6 +17,7 @@ namespace Models.ChatModels
         [Index(IsUnique = true)]
         public string Name { get; set; }
 
+        public Company() { }
         public Company(string name)
         {
             this.Name = name;

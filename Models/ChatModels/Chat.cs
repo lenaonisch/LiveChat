@@ -23,17 +23,12 @@ namespace Models.ChatModels
 	    [NotMapped]
         public string GroupID;
 
+        public Chat() { }
         public Chat(string GroupID)
         {
             this.GroupID = GroupID;
             StartDateTime = DateTime.Now;
             Messages = new List<Message>();
         }
-
-        //public void AddMessage(string text, BaseUser bu)
-        //{
-        //    Messages.Add(new Message(text, bu, DateTime.Now));
-        //}
-
     }
 }

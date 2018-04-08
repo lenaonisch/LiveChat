@@ -78,7 +78,7 @@ namespace LiveChat
 
         public void RegisterOperator(string user)
         {
-            UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, Context.ConnectionId) };
+            UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, tmpComp, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
             
@@ -126,7 +126,7 @@ namespace LiveChat
             {
                 if (StaticData.Users[tmpComp].ContainsKey(cId) == false)
                 {
-                    StaticData.Users[tmpComp].Add(cId, new UserProfile() { BaseUser = new BaseUser(user, cId) });//Add to User parameter Identity values
+                    StaticData.Users[tmpComp].Add(cId, new UserProfile() { BaseUser = new BaseUser(user, tmpComp, cId) });//Add to User parameter Identity values
                 }
 
                 string group = StaticData.GetRoomID().ToString();
