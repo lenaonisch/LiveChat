@@ -180,7 +180,7 @@ namespace LiveChat
         {
             //string name = Context.User.Identity.Name;
             //if (name == "") name = DateTime.Now.ToString();
-            if (Context.Headers["Referer"] == "http://localhost:54160/Home/OperatorChat")
+            if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
                 RegisterOperator("Operator");
             else
                 RegisterUser(DateTime.Now.ToString());

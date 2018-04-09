@@ -17,5 +17,10 @@ namespace LiveChat
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        public static string GetCentralChatHub()
+        {
+            return System.Configuration.ConfigurationManager.AppSettings["CentralChatHub"].ToString(); 
+        }
     }
 }
