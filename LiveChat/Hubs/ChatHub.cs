@@ -187,6 +187,11 @@ namespace LiveChat
             return base.OnConnected();
         }
 
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            return base.OnDisconnected(stopCalled);
+        }
+
         public ChatHub()
         {
             tmpComp = StaticData.Companies.First().Value;
