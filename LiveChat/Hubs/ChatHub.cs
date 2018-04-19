@@ -98,13 +98,8 @@ namespace LiveChat
                         string group = kvPair.Key;
                         Chat chat = kvPair.Value;
                         chats.Add(chat);
-                        Task t = Groups.Add(op.BaseUser.ConnectionID, group);
+                        Groups.Add(op.BaseUser.ConnectionID, group).Wait();
                         //StaticData.UsersInGroups[tmpComp][user].Add(chat);
-                        while (t.IsCompleted == false)
-                        {
-                            if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                            Thread.Sleep(20);
-                        }
 
                         Clients.Group(group).addNewMessageToPage(op.BaseUser.NickName, group, "joined room" + group);
                     }
