@@ -61,7 +61,6 @@ namespace LiveChat
         //TODO: Add [Authorize] after authentification is present
         public void Send(string group, string message)
         {
-
             BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
             Clients.Group(group).addNewMessageToPage(bu.NickName, group, message);
             StaticData.Groups[tmpComp][group].Messages.Add(new Message(message, bu, DateTime.Now));
@@ -92,7 +91,7 @@ namespace LiveChat
                 if (StaticData.Operators[tmpComp].Count == 1)
                 {
                     Dictionary<string, Chat> groups = StaticData.Groups[tmpComp];
-
+                    
                     foreach (KeyValuePair<string, Chat> kvPair in groups)
                     {
                         string group = kvPair.Key;
@@ -107,6 +106,7 @@ namespace LiveChat
 
                         //StaticData.UsersInGroups[tmpComp][user].Add(chat);
                         Clients.Group(group).addNewMessageToPage(op.BaseUser.NickName, group, "joined room" + group);
+                        Clients.Caller.registerUserInRoom(group);
                     }
                 }
             }
@@ -156,7 +156,9 @@ namespace LiveChat
                 }
 
                 JoinOperator(group);
+                Clients.OthersInGroup(group).registerUserInRoom(group);
                 Clients.Group(group).addNewMessageToPage(user, group, "joined room" + group);
+
             }
         }
 
