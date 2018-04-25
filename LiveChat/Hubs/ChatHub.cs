@@ -177,7 +177,7 @@ namespace LiveChat
             foreach(var chat in chats)
             {
                 Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed");
-                Clients.OthersInGroup(chat.GroupID).CloseGroup(chat.GroupID);
+                Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID);
             }
         }
 
