@@ -11,6 +11,8 @@ namespace Models.ChatModels
 
         public static object lockobj = new object();
 
+        public const int SleepTime = 100;
+
         /// <summary>
         /// Last free RoomID
         /// </summary>

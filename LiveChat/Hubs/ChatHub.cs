@@ -80,7 +80,6 @@ namespace LiveChat
             UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, tmpComp, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
-            
 
             lock (StaticData.lockobj)
             {
@@ -101,7 +100,7 @@ namespace LiveChat
                         while (t.IsCompleted == false)
                         {
                             if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                            Thread.Sleep(20);
+                            Thread.Sleep(StaticData.SleepTime);
                         }
 
                         //StaticData.UsersInGroups[tmpComp][user].Add(chat);
@@ -122,6 +121,7 @@ namespace LiveChat
                 RegisterOperator(user);
                 return;
             }
+
             lock (StaticData.lockobj)
             {
                 if (StaticData.Users[tmpComp].ContainsKey(cId) == false)
@@ -151,7 +151,7 @@ namespace LiveChat
                     while (t.IsCompleted == false)
                     {
                         if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                        Thread.Sleep(20);
+                        Thread.Sleep(StaticData.SleepTime);
                     }
                 }
 
@@ -164,20 +164,29 @@ namespace LiveChat
 
         public void RemoveUser(string connectionID)
         {
-            var userProfile = StaticData.Users[tmpComp][connectionID];
-            var userName = userProfile.BaseUser.NickName;
-            HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][userName];
-            StaticData.Users[tmpComp].Remove(userName);
-            StaticData.UsersInGroups[tmpComp].Remove(userName);
-            StaticData.Groups[tmpComp].Remove(connectionID);
-            if (userName == "Operator")
+            lock (StaticData.lockobj)
             {
-                StaticData.Operators[tmpComp].Remove(userProfile);
-            }
-            foreach(var chat in chats)
-            {
-                Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed");
-                Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID);
+                var userProfile = StaticData.Users[tmpComp][connectionID];
+                var userName = userProfile.BaseUser.NickName;
+                HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][userName];
+                StaticData.Users[tmpComp].Remove(userName);
+                StaticData.UsersInGroups[tmpComp].Remove(userName);
+                StaticData.Groups[tmpComp].Remove(connectionID);
+                if (userName == "Operator")
+                {
+                    StaticData.Operators[tmpComp].Remove(userProfile);
+                }
+                foreach (var chat in chats)
+                {
+                    Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed");
+                    Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID);
+                    Task t = Groups.Remove(connectionID, chat.GroupID);
+                    while (t.IsCompleted == false)
+                    {
+                        if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not removed from the group");
+                        Thread.Sleep(StaticData.SleepTime);
+                    }
+                }
             }
         }
 
@@ -192,7 +201,7 @@ namespace LiveChat
             while (t.IsCompleted == false)
             {
                 if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                Thread.Sleep(20);
+                Thread.Sleep(StaticData.SleepTime);
             }
             Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, "joined room" + roomName);
         }
