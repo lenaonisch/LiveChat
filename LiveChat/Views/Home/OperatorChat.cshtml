@@ -2,7 +2,6 @@
 @using Models.ChatModels;
 @{
     ViewBag.Title = "OperatorChat";
-
 }
 <h2>OperatorChat</h2>
 <input id="displayname" type="hidden" />
@@ -48,8 +47,12 @@
                 myform.find('tr').each(function () {
                     var trow = $(this);
                     //var len = document.getElementById('ChatsTable').rows[0].cells.length;
-                    trow.append('<td width="100" valign="top"><ul id="discussion' + group + '"><h1>room' + group + '</h1></ul></td>');
+                    trow.append('<td id= "group'+group+'" width="100" valign="top"><ul id="discussion' + group + '"><h1>room' + group + '</h1></ul></td>');
                 });
+            }
+
+            chat.client.CloseGroup = function (group) {
+                document.getElementById("group" + group).remove();
             }
 
             // Get the user name and store it to prepend to messages.

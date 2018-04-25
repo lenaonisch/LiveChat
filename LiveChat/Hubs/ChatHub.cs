@@ -162,6 +162,25 @@ namespace LiveChat
             }
         }
 
+        public void RemoveUser(string connectionID)
+        {
+            var userProfile = StaticData.Users[tmpComp][connectionID];
+            var userName = userProfile.BaseUser.NickName;
+            HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][userName];
+            StaticData.Users[tmpComp].Remove(userName);
+            StaticData.UsersInGroups[tmpComp].Remove(userName);
+            StaticData.Groups[tmpComp].Remove(connectionID);
+            if (userName == "Operator")
+            {
+                StaticData.Operators[tmpComp].Remove(userProfile);
+            }
+            foreach(var chat in chats)
+            {
+                Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed");
+                Clients.OthersInGroup(chat.GroupID).CloseGroup(chat.GroupID);
+            }
+        }
+
         public void JoinOperator(string roomName)
         {
             UserProfile op = StaticData.GetMostFreeOperator(tmpComp);
@@ -191,6 +210,22 @@ namespace LiveChat
 
         public override Task OnDisconnected(bool stopCalled)
         {
+            
+            if (stopCalled)
+            {
+                // We know that Stop() was called on the client,
+                // and the connection shut down gracefully.
+                RemoveUser(this.Context.ConnectionId);
+                
+
+            }
+            else
+            {
+                // This server hasn't heard from the client in the last ~35 seconds.
+                // If SignalR is behind a load balancer with scaleout configured, 
+                // the client may still be connected to another SignalR server.
+                RemoveUser(this.Context.ConnectionId);
+            }
             return base.OnDisconnected(stopCalled);
         }
 
