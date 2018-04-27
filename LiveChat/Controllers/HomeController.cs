@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Log;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -31,10 +32,17 @@ namespace LiveChat.Controllers
             ViewBag.UserName = User.Identity.Name;
             return View();
         }
+
         public ActionResult OperatorChat()
         {
             ViewBag.UserName = User.Identity.Name;
             return View();
+        }
+
+        public string Log()
+        {
+            var s = Logger.GetHTMLAndClear();
+            return s;
         }
     }
 }

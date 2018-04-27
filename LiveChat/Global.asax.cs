@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Log;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -16,6 +18,8 @@ namespace LiveChat
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            Logger.Path = Path.Combine(Server.MapPath("~"), "Log.txt");
+            Logger.Start();
         }
 
         public static string GetCentralChatHub()

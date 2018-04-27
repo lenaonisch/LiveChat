@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Log;
 using Microsoft.AspNet.SignalR;
 using Models.ChatModels;
 
@@ -17,46 +18,6 @@ namespace LiveChat
         /// </summary>
         private static Company tmpComp;
 
-        ////TODO: Delete this method
-        ///// <summary>
-        /////  Register user in the group
-        ///// </summary>
-        ///// <param name="user"></param>
-        ///// <param name="group"></param>
-        //public void Register(string user, string group)
-        //{
-        //    string cId = Context.ConnectionId;
-
-        //    if (StaticData.Users[tmpComp].ContainsKey(user) == false)
-        //    {
-        //        StaticData.Users[tmpComp].Add(user, new UserProfile() { BaseUser = new BaseUser() { NickName = user } });
-        //    }
-
-        //    //Adding group if it doesn't exist
-        //    if (StaticData.Groups[tmpComp].ContainsKey(group) == false)
-        //    {
-        //        StaticData.Groups[tmpComp].Add(group, new Chat(StaticData.GetRoomID().ToString()));
-        //    }
-
-        //    //Adding user to group
-        //    if (StaticData.UsersInGroups[tmpComp].ContainsKey(user) == false)
-        //    {
-        //        StaticData.UsersInGroups[tmpComp].Add(user, new List<Chat>());
-        //    }
-
-        //    if (StaticData.UsersInGroups[tmpComp][user].Contains(StaticData.Groups[tmpComp][group]) == false)
-        //    {
-        //        Task t = Groups.Add(cId, group);
-        //        Chat chat = new Chat(group);
-        //        StaticData.UsersInGroups[tmpComp][user].Add(chat);
-        //        while (t.IsCompleted == false)
-        //        {
-        //            if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-        //            Thread.Sleep(20);
-        //        }
-        //    }
-        //    Clients.Group(group).addNewMessageToPage(user, group, "joined room" + group);
-        //}
 
         //TODO: Add [Authorize] after authentification is present
         public void Send(string group, string message)
@@ -77,6 +38,7 @@ namespace LiveChat
 
         public void RegisterOperator(string user)
         {
+            Logger.LogMessage("Operator enter");
             UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, tmpComp, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
@@ -96,12 +58,12 @@ namespace LiveChat
                         string group = kvPair.Key;
                         Chat chat = kvPair.Value;
                         chats.Add(chat);
-                        Task t = Groups.Add(op.BaseUser.ConnectionID, group);
-                        while (t.IsCompleted == false)
-                        {
-                            if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                            Thread.Sleep(StaticData.SleepTime);
-                        }
+                        /*Task t =*/ Groups.Add(op.BaseUser.ConnectionID, group).Wait();
+                        //while (t.IsCompleted == false)
+                        //{
+                        //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
+                        //    Thread.Sleep(StaticData.SleepTime);
+                        //}
 
                         //StaticData.UsersInGroups[tmpComp][user].Add(chat);
                         Clients.Group(group).addNewMessageToPage(op.BaseUser.NickName, group, "joined room" + group);
@@ -145,16 +107,16 @@ namespace LiveChat
 
                 if (StaticData.UsersInGroups[tmpComp][user].Contains(StaticData.Groups[tmpComp][group]) == false)
                 {
-                    Task t = Groups.Add(cId, group);
+                   /* Task t =*/ Groups.Add(cId, group).Wait();
                     Chat chat = new Chat(group);
                     StaticData.UsersInGroups[tmpComp][user].Add(chat);
-                    while (t.IsCompleted == false)
-                    {
-                        if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                        Thread.Sleep(StaticData.SleepTime);
-                    }
+                    //while (t.IsCompleted == false)
+                    //{
+                    //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
+                    //    Thread.Sleep(StaticData.SleepTime);
+                    //}
                 }
-
+                Logger.LogMessage("User enter to room "+ group);
                 JoinOperator(group);
                 Clients.OthersInGroup(group).registerUserInRoom(group);
                 Clients.Group(group).addNewMessageToPage(user, group, "joined room" + group);
@@ -164,7 +126,7 @@ namespace LiveChat
 
         public void RemoveUser(string connectionID)
         {
-            lock (StaticData.lockobj)
+            //lock (StaticData.lockobj)
             {
                 var userProfile = StaticData.Users[tmpComp][connectionID];
                 var userName = userProfile.BaseUser.NickName;
@@ -180,12 +142,15 @@ namespace LiveChat
                 {
                     Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed");
                     Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID);
-                    Task t = Groups.Remove(connectionID, chat.GroupID);
-                    while (t.IsCompleted == false)
-                    {
-                        if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not removed from the group");
-                        Thread.Sleep(StaticData.SleepTime);
-                    }
+                    Logger.LogMessage("User " + userName+" is disconnected from group" + chat.GroupID);
+                    //This line is not needed and cause an error:
+                    /*Task t =*/ /*Groups.Remove(connectionID, chat.GroupID).Wait();*/
+                   // Debug.WriteLine("End disconnect from group" + chat.GroupID);
+                    //while (t.IsCompleted == false)
+                    //{
+                    //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not removed from the group");
+                    //    Thread.Sleep(StaticData.SleepTime);
+                    //}
                 }
             }
         }
@@ -195,14 +160,14 @@ namespace LiveChat
             UserProfile op = StaticData.GetMostFreeOperator(tmpComp);
 
             if (op == null) return;
-            Task t = Groups.Add(op.BaseUser.ConnectionID, roomName);
+            /*Task t =*/ Groups.Add(op.BaseUser.ConnectionID, roomName).Wait();
             Chat chat = new Chat(roomName);
             StaticData.UsersInGroups[tmpComp][op.BaseUser.NickName].Add(chat);
-            while (t.IsCompleted == false)
-            {
-                if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                Thread.Sleep(StaticData.SleepTime);
-            }
+            //while (t.IsCompleted == false)
+            //{
+            //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
+            //    Thread.Sleep(StaticData.SleepTime);
+            //}
             Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, "joined room" + roomName);
         }
 
@@ -214,6 +179,7 @@ namespace LiveChat
                 RegisterOperator("Operator");
             else
                 RegisterUser(DateTime.Now.ToString());
+
             return base.OnConnected();
         }
 
