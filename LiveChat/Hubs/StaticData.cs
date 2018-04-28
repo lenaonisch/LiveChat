@@ -37,12 +37,12 @@ namespace Models.ChatModels
         public static ConcurrentDictionary<Company, ConcurrentDictionary<string, Chat>> Groups = new ConcurrentDictionary<Company, ConcurrentDictionary<string, Chat>>();
 
         /// <summary>
-        /// Connects username and groupname. The key is the username, the value is group
+        /// Connects username and groupname. The key is the ConnectionId, the value is group
         /// </summary>
         public static ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>> UsersInGroups = new ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>>();
 
         /// <summary>
-        /// Connects username and ConnectionId. The key is the username, the value is the ConnectionId
+        /// Connects ConnectionId  and UserProfile. The key is the ConnectionId, the value is the UserProfile 
         /// </summary>
         public static ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>> Users = new ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>>();
 
@@ -81,13 +81,13 @@ namespace Models.ChatModels
             HashSet<UserProfile> ops = Operators[company];
             UserProfile op=Operators[company].First();
             ConcurrentDictionary<string, HashSet<Chat>> uig = UsersInGroups[company];
-            int minRooms = uig[op.BaseUser.NickName].Count;
+            int minRooms = uig[op.BaseUser.ConnectionID].Count;
 
             foreach(UserProfile op1 in ops)
             {
-                if (uig[op1.BaseUser.NickName].Count < minRooms)
+                if (uig[op1.BaseUser.ConnectionID].Count < minRooms)
                 {
-                    minRooms = uig[op1.BaseUser.NickName].Count;
+                    minRooms = uig[op1.BaseUser.ConnectionID].Count;
                     op = op1;
                 }
             }

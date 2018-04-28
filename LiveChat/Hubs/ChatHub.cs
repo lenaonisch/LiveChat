@@ -33,21 +33,21 @@ namespace LiveChat
         public void Send(string message)
         {
             BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
-            string group = StaticData.UsersInGroups[tmpComp][bu.NickName].First().GroupID;
+            string group = StaticData.UsersInGroups[tmpComp][Context.ConnectionId].First().GroupID;
             Clients.Group(group).addNewMessageToPage(bu.NickName, group, message).Wait();
             StaticData.Groups[tmpComp][group].Messages.Add(new Message(message, bu, DateTime.Now));
         }
 
         public void RegisterOperator(string user)
         {
-            Logger.LogMessage("Operator enter");
+            Logger.LogMessage("Operator register start");
             UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, tmpComp, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
 
-            lock (StaticData.lockobj)
+            //lock (StaticData.lockobj)
             {
-                StaticData.UsersInGroups[tmpComp].Add(user, chats);
+                StaticData.UsersInGroups[tmpComp].Add(cId, chats);
                 StaticData.Users[tmpComp].Add(cId, op);
                 StaticData.Operators[tmpComp].LAdd(op);
                 //if the operator is the first who enters chat - he should be added to all rooms
@@ -60,34 +60,27 @@ namespace LiveChat
                         string group = kvPair.Key;
                         Chat chat = kvPair.Value;
                         chats.LAdd(chat);
-                        /*Task t =*/
                         Groups.Add(op.BaseUser.ConnectionID, group).Wait();
-                        //while (t.IsCompleted == false)
-                        //{
-                        //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-                        //    Thread.Sleep(StaticData.SleepTime);
-                        //}
-
-                        //StaticData.UsersInGroups[tmpComp][user].Add(chat);
                         Clients.Group(group).addNewMessageToPage(op.BaseUser.NickName, group, "joined room" + group).Wait();
                         Clients.Caller.registerUserInRoom(group).Wait();
                     }
                 }
             }
+            Logger.LogMessage("Operator register end");
         }
 
         public void RegisterUser(string user)
         {
             string cId = Context.ConnectionId;
 
-            //this code should be changed, when Identity is used
-            if (user == "Operator")
-            {
-                RegisterOperator(user);
-                return;
-            }
+            ////this code should be changed, when Identity is used
+            //if (user == "Operator")
+            //{
+            //    RegisterOperator(user);
+            //    return;
+            //}
 
-            lock (StaticData.lockobj)
+            //lock (StaticData.lockobj)
             {
                 if (StaticData.Users[tmpComp].ContainsKey(cId) == false)
                 {
@@ -105,16 +98,15 @@ namespace LiveChat
                 //Adding user to group
                 //if (StaticData.UsersInGroups[tmpComp].ContainsKey(user) == false)
                 {
-                    StaticData.UsersInGroups[tmpComp].Add(user, new HashSet<Chat>());
+                    StaticData.UsersInGroups[tmpComp].Add(cId, new HashSet<Chat>());
                 }
 
                 //if (StaticData.UsersInGroups[tmpComp][user].Contains(StaticData.Groups[tmpComp][group]) == false)
                 {
-                    /* Task t =*/
                     Groups.Add(cId, group).Wait();
-                    StaticData.UsersInGroups[tmpComp][user].LAdd(chat);
+                    StaticData.UsersInGroups[tmpComp][cId].LAdd(chat);
                 }
-                Logger.LogMessage("User " + user + " enter to room " + group);
+                Logger.LogMessage("User " + user + " with ID " + cId + " enter to room " + group);
                 JoinOperator(group);
                 Clients.OthersInGroup(group).registerUserInRoom(group).Wait();
                 Clients.Group(group).addNewMessageToPage(user, group, "joined room" + group).Wait();
@@ -126,17 +118,18 @@ namespace LiveChat
         {
             lock (StaticData.lockobj)
             {
+                Logger.LogMessage("Remove user with ID " + connectionID);
                 var userProfile = StaticData.Users[tmpComp][connectionID];
                 var userName = userProfile.BaseUser.NickName;
-                HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][userName];
+                HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][connectionID];
                 
                 if (userName == "Operator")
                 {
                     StaticData.Operators[tmpComp].LRemove(userProfile);
                 }
 
-                StaticData.Users[tmpComp].Remove(userName);
-                StaticData.UsersInGroups[tmpComp].Remove(userName);
+                StaticData.Users[tmpComp].Remove(connectionID);
+                StaticData.UsersInGroups[tmpComp].Remove(connectionID);
                 StaticData.Groups[tmpComp].Remove(connectionID);
 
                 foreach (var chat in chats)
@@ -145,20 +138,12 @@ namespace LiveChat
                     Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID).Wait();
 
                     //Remove operator from room:
-                    var sel = StaticData.Operators[tmpComp].Where(op => { return StaticData.UsersInGroups[tmpComp][op.BaseUser.NickName].Contains(chat); });
+                    var sel = StaticData.Operators[tmpComp].Where(op => { return StaticData.UsersInGroups[tmpComp][op.BaseUser.ConnectionID].Contains(chat); });
                     var oper = sel.First().BaseUser;
                     Groups.Remove(oper.ConnectionID, chat.GroupID).Wait();
-                    StaticData.UsersInGroups[tmpComp][oper.NickName].LRemove(chat);
+                    StaticData.UsersInGroups[tmpComp][oper.ConnectionID].LRemove(chat);
 
                     Logger.LogMessage("User " + userName + " is disconnected from group" + chat.GroupID);
-                    //This line is not needed and cause an error:
-                    /*Task t =*/ /*Groups.Remove(connectionID, chat.GroupID).Wait();*/
-                                 // Debug.WriteLine("End disconnect from group" + chat.GroupID);
-                                 //while (t.IsCompleted == false)
-                                 //{
-                                 //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not removed from the group");
-                                 //    Thread.Sleep(StaticData.SleepTime);
-                                 //}
                 }
             }
         }
@@ -168,42 +153,33 @@ namespace LiveChat
             UserProfile op = StaticData.GetMostFreeOperator(tmpComp);
 
             if (op == null) return;
-            /*Task t =*/
             Groups.Add(op.BaseUser.ConnectionID, roomName).Wait();
             Chat chat = StaticData.Groups[tmpComp][roomName];
-            StaticData.UsersInGroups[tmpComp][op.BaseUser.NickName].LAdd(chat);
-            //while (t.IsCompleted == false)
-            //{
-            //    if (t.IsCanceled || t.IsFaulted) throw new Exception("User was not added into the group");
-            //    Thread.Sleep(StaticData.SleepTime);
-            //}
+            StaticData.UsersInGroups[tmpComp][op.BaseUser.ConnectionID].LAdd(chat);
             Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, "joined room" + roomName).Wait();
+        }
+
+
+        private void AddConnection()
+        {
+            lock (StaticData.lockobj)
+            {
+                //string name = Context.User.Identity.Name;
+                //if (name == "") name = DateTime.Now.ToString();
+                if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
+                    RegisterOperator("Operator");
+                //process situation when 2 users added in one moment of time(it seems to me, adding milliseconds will not solve the problem fully)
+                else
+                {
+                    string genName = DateTime.Now.ToString();
+                    RegisterUser(genName);
+                }
+            }
         }
 
         public override Task OnConnected()
         {
-            //string name = Context.User.Identity.Name;
-            //if (name == "") name = DateTime.Now.ToString();
-            if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
-                RegisterOperator("Operator");
-            //process situation when 2 users added in one moment of time(it seems to me, adding miliseconds will not solve the problem fully)
-            else
-            {
-                string genName = DateTime.Now.ToString();
-                if (StaticData.Users[tmpComp].ContainsKey(genName))
-                {
-                    string genNameM = "";
-                    int i = 0;
-                    do
-                    {
-                        genNameM = genName + i;
-                    } while (StaticData.Users[tmpComp].ContainsKey(genNameM));
-                    genName = genNameM;
-
-                }
-                RegisterUser(genName);
-            }
-
+            AddConnection();
             return base.OnConnected();
         }
 
@@ -226,6 +202,24 @@ namespace LiveChat
                 RemoveUser(this.Context.ConnectionId);
             }
             return base.OnDisconnected(stopCalled);
+        }
+
+        public override Task OnReconnected()
+        {
+            lock (StaticData.lockobj)
+            {
+                //string name = Context.User.Identity.Name;
+                //if (name == "") name = DateTime.Now.ToString();
+                if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
+                    RegisterOperator("Operator");
+                //process situation when 2 users added in one moment of time(it seems to me, adding milliseconds will not solve the problem fully)
+                else
+                {
+                    string genName = DateTime.Now.ToString();
+                    RegisterUser(genName);
+                }
+            }
+            return base.OnReconnected();
         }
 
         public ChatHub()
