@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LiveChat.Extensions;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,28 +23,28 @@ namespace Models.ChatModels
         /// <summary>
         /// Key - Company name, Value - Company
         /// </summary>
-        public static Dictionary<string, Company> Companies = new Dictionary<string, Company>();
+        public static ConcurrentDictionary<string, Company> Companies = new ConcurrentDictionary<string, Company>();
 
         /// <summary>
         /// All operators which are online
         /// </summary>
-        public static Dictionary<Company, HashSet<UserProfile>> Operators = new Dictionary<Company, HashSet<UserProfile>>();
+        public static ConcurrentDictionary<Company, HashSet<UserProfile>> Operators = new ConcurrentDictionary<Company, HashSet<UserProfile>>();
 
         //According to https://stackoverflow.com/questions/19351493/getting-all-group-names-in-signalr it is needed to manage groups manually
         /// <summary>
         /// Dictionary groups
         /// </summary>
-        public static Dictionary<Company, Dictionary<string, Chat>> Groups = new Dictionary<Company, Dictionary<string, Chat>>();
+        public static ConcurrentDictionary<Company, ConcurrentDictionary<string, Chat>> Groups = new ConcurrentDictionary<Company, ConcurrentDictionary<string, Chat>>();
 
         /// <summary>
         /// Connects username and groupname. The key is the username, the value is group
         /// </summary>
-        public static Dictionary<Company, Dictionary<string, HashSet<Chat>>> UsersInGroups = new Dictionary<Company, Dictionary<string, HashSet<Chat>>>();
+        public static ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>> UsersInGroups = new ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>>();
 
         /// <summary>
         /// Connects username and ConnectionId. The key is the username, the value is the ConnectionId
         /// </summary>
-        public static Dictionary<Company, Dictionary<string, UserProfile>> Users = new Dictionary<Company, Dictionary<string, UserProfile>>();
+        public static ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>> Users = new ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>>();
 
         static StaticData()
         {
@@ -60,9 +62,9 @@ namespace Models.ChatModels
             {
                 string name = company.Name;
                 Companies.Add(name, company);
-                Groups.Add(company, new Dictionary<string, Chat>());
-                Users.Add(company, new Dictionary<string, UserProfile>());
-                UsersInGroups.Add(company, new Dictionary<string, HashSet<Chat>>());
+                Groups.Add(company, new ConcurrentDictionary<string, Chat>());
+                Users.Add(company, new ConcurrentDictionary<string, UserProfile>());
+                UsersInGroups.Add(company, new ConcurrentDictionary<string, HashSet<Chat>>());
                 Operators.Add(company, new HashSet<UserProfile>());
             }
         }
@@ -78,7 +80,7 @@ namespace Models.ChatModels
 
             HashSet<UserProfile> ops = Operators[company];
             UserProfile op=Operators[company].First();
-            Dictionary<string, HashSet<Chat>> uig = UsersInGroups[company];
+            ConcurrentDictionary<string, HashSet<Chat>> uig = UsersInGroups[company];
             int minRooms = uig[op.BaseUser.NickName].Count;
 
             foreach(UserProfile op1 in ops)
@@ -92,6 +94,23 @@ namespace Models.ChatModels
 
             return op;
         }
+
+        //public static void AddUser(Company company, string userName, string connectionID)
+        //{
+        //    if (Users[company].ContainsKey(connectionID) == false)
+        //    {
+        //        Users[company].TryAdd(connectionID, new UserProfile() { BaseUser = new BaseUser(userName, company, connectionID) });//Add to User parameter Identity values
+        //    }
+
+        //    string group = StaticData.GetRoomID().ToString();
+
+        //    //Adding group if it doesn't exist
+        //    if (Groups[company].ContainsKey(group) == false)
+        //    {
+        //        Groups[company].TryAdd(group, new Chat(group));
+        //    }
+
+        //}
 
         public static int GetRoomID()
         {

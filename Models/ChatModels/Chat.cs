@@ -24,9 +24,10 @@ namespace Models.ChatModels
         public string GroupID;
 
         public Chat() { }
-        public Chat(string GroupID)
+        public Chat(string GroupID, Company company)
         {
             this.GroupID = GroupID;
+            this.Company = company;
             StartDateTime = DateTime.Now;
             Messages = new List<Message>();
         }
