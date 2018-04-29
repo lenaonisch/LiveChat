@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using Models.ChatModels;
+using Microsoft.AspNet.Identity;
 
 namespace LiveChat
 {
+   // [Authorize(Roles = "Operator")]
     public class ChatHub : Hub
     {
         /// <summary>
@@ -61,7 +63,6 @@ namespace LiveChat
         //TODO: Add [Authorize] after authentification is present
         public void Send(string group, string message)
         {
-
             BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
             Clients.Group(group).addNewMessageToPage(bu.NickName, group, message);
             StaticData.Groups[tmpComp][group].AddMessage(message, bu);
