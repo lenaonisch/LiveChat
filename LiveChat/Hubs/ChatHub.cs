@@ -206,19 +206,8 @@ namespace LiveChat
 
         public override Task OnReconnected()
         {
-            lock (StaticData.lockobj)
-            {
-                //string name = Context.User.Identity.Name;
-                //if (name == "") name = DateTime.Now.ToString();
-                if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
-                    RegisterOperator("Operator");
-                //process situation when 2 users added in one moment of time(it seems to me, adding milliseconds will not solve the problem fully)
-                else
-                {
-                    string genName = DateTime.Now.ToString();
-                    RegisterUser(genName);
-                }
-            }
+            Logger.LogMessage("Reconnection used!!!");
+            AddConnection();
             return base.OnReconnected();
         }
 
