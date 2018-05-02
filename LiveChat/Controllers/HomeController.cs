@@ -33,9 +33,16 @@ namespace LiveChat.Controllers
             return View();
         }
 
+        [Authorize(Roles="Operator")]
         public ActionResult OperatorChat()
         {
             ViewBag.UserName = User.Identity.Name;
+            return View();
+        }
+
+        [Authorize(Roles = "Owner")]
+        public ActionResult PrivateOffice()
+        {
             return View();
         }
 

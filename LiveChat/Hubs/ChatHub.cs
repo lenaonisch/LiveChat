@@ -13,6 +13,7 @@ using LiveChat.Extensions;
 
 namespace LiveChat
 {
+    // [Authorize(Roles = "Operator")]
     public class ChatHub : Hub
     {
         /// <summary>
@@ -92,7 +93,7 @@ namespace LiveChat
                 //Adding group if it doesn't exist
                 //if (StaticData.Groups[tmpComp].ContainsKey(group) == false)
                 {
-                    StaticData.Groups[tmpComp].Add(group,chat );
+                    StaticData.Groups[tmpComp].Add(group, chat);
                 }
 
                 //Adding user to group
@@ -122,7 +123,7 @@ namespace LiveChat
                 var userProfile = StaticData.Users[tmpComp][connectionID];
                 var userName = userProfile.BaseUser.NickName;
                 HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][connectionID];
-                
+
                 if (userName == "Operator")
                 {
                     StaticData.Operators[tmpComp].LRemove(userProfile);
@@ -139,10 +140,12 @@ namespace LiveChat
 
                     //Remove operator from room:
                     var sel = StaticData.Operators[tmpComp].Where(op => { return StaticData.UsersInGroups[tmpComp][op.BaseUser.ConnectionID].Contains(chat); });
-                    var oper = sel.First().BaseUser;
-                    Groups.Remove(oper.ConnectionID, chat.GroupID).Wait();
-                    StaticData.UsersInGroups[tmpComp][oper.ConnectionID].LRemove(chat);
-
+                    if (sel.Count() > 0)
+                    {
+                        var oper = sel.First().BaseUser;
+                        Groups.Remove(oper.ConnectionID, chat.GroupID).Wait();
+                        StaticData.UsersInGroups[tmpComp][oper.ConnectionID].LRemove(chat);
+                    }
                     Logger.LogMessage("User " + userName + " is disconnected from group" + chat.GroupID);
                 }
             }
