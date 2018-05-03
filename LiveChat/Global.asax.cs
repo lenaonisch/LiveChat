@@ -1,4 +1,8 @@
-﻿using Log;
+﻿using DB;
+using LiveChat.Hubs;
+using Log;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +24,17 @@ namespace LiveChat
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Logger.Path = Path.Combine(Server.MapPath("~"), "Log.txt");
             Logger.Start();
+            //IdentityOperations.RegisterRoles();
+            var RoleManager = new RoleManager<IdentityRole>(
+                    new RoleStore<IdentityRole>(new ApplicationDbContext()));
+            if (!RoleManager.RoleExists("Operator"))
+            {
+                RoleManager.Create(new IdentityRole("Operator"));
+            }
+            if (!RoleManager.RoleExists("Owner"))
+            {
+                RoleManager.Create(new IdentityRole("Owner"));
+            }
         }
 
         public static string GetCentralChatHub()

@@ -83,31 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationDbContext.cs" />
-    <Compile Include="Migrations\201803232003135_azure_initial.cs" />
-    <Compile Include="Migrations\201803232003135_azure_initial.Designer.cs">
-      <DependentUpon>201803232003135_azure_initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803281919310_ChatModels.cs" />
-    <Compile Include="Migrations\201803281919310_ChatModels.Designer.cs">
-      <DependentUpon>201803281919310_ChatModels.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804071121445_CompanyAssignment.cs" />
-    <Compile Include="Migrations\201804071121445_CompanyAssignment.Designer.cs">
-      <DependentUpon>201804071121445_CompanyAssignment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201803232003135_azure_initial.resx">
-      <DependentUpon>201803232003135_azure_initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803281919310_ChatModels.resx">
-      <DependentUpon>201803281919310_ChatModels.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804071121445_CompanyAssignment.resx">
-      <DependentUpon>201804071121445_CompanyAssignment.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

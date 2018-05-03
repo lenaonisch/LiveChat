@@ -2,7 +2,7 @@
 
 namespace Models.ModelsMVC
 {
-    class AppRole : IdentityRole
+    public class AppRole : IdentityRole
     {
         public AppRole() : base() { }
         public AppRole(string name) : base() { }

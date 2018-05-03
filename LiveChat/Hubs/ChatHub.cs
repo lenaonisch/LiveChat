@@ -10,6 +10,8 @@ using Log;
 using Microsoft.AspNet.SignalR;
 using Models.ChatModels;
 using LiveChat.Extensions;
+using System.Security.Claims;
+using LiveChat.Hubs;
 
 namespace LiveChat
 {
@@ -22,7 +24,7 @@ namespace LiveChat
         private static Company tmpComp;
 
 
-        //TODO: Add [Authorize] after authentification is present
+        [Authorize(Roles = "Operator")]
         public void Send(string group, string message)
         {
             BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
@@ -123,8 +125,8 @@ namespace LiveChat
                 var userProfile = StaticData.Users[tmpComp][connectionID];
                 var userName = userProfile.BaseUser.NickName;
                 HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][connectionID];
-
-                if (userName == "Operator")
+                
+                if (IdentityOperations.ContainsRole(Context.User.Identity, "Operator"))
                 {
                     StaticData.Operators[tmpComp].LRemove(userProfile);
                 }
@@ -169,8 +171,8 @@ namespace LiveChat
             {
                 //string name = Context.User.Identity.Name;
                 //if (name == "") name = DateTime.Now.ToString();
-                if (Context.Headers["Referer"].ToLower() == (MvcApplication.GetCentralChatHub() + "/Home/OperatorChat").ToLower())
-                    RegisterOperator("Operator");
+                if (IdentityOperations.ContainsRole(Context.User.Identity, "Operator"))
+                    RegisterOperator(Context.User.Identity.Name);
                 //process situation when 2 users added in one moment of time(it seems to me, adding milliseconds will not solve the problem fully)
                 else
                 {
