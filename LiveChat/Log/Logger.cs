@@ -6,6 +6,7 @@ namespace Log
 
    static class Logger
     {
+        private const bool isOn = false;
 
         public static string Path { get; set; }
 
@@ -20,12 +21,14 @@ namespace Log
 
         public static void Start()
         {
+            if(!isOn) return;
             f = new FileStream(Path, FileMode.Create);
             sw = new StreamWriter(f);
         }
 
         public static void Clear()
         {
+            if (!isOn) return;
             lock (lockObj)
             {
                 f.Close();
@@ -36,6 +39,7 @@ namespace Log
 
         public static string GetHTMLAndClear()
         {
+            if (!isOn) return "";
             string res = "";
             lock (lockObj)
             {
@@ -56,6 +60,8 @@ namespace Log
 
         public static void LogMessage(string s)
         {
+            if (!isOn) return;
+            if (f == null) Start();
             lock(lockObj)
             {
                 //instance.sw.WriteLineAsync(s).Wait();
@@ -66,6 +72,7 @@ namespace Log
 
         public static void Flush()
         {
+            if (!isOn) return;
             sw.Flush();
         }
 

@@ -23,7 +23,7 @@ namespace LiveChat
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Logger.Path = Path.Combine(Server.MapPath("~"), "Log.txt");
-            Logger.Start();
+            //Logger.Start();
             //IdentityOperations.RegisterRoles();
             var RoleManager = new RoleManager<IdentityRole>(
                     new RoleStore<IdentityRole>(new ApplicationDbContext()));
