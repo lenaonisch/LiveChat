@@ -19,9 +19,21 @@ namespace LiveChat.Hubs
                  .Select(c => c.Value).Contains(role);
         }
 
-        //public static void RegisterRoles()
-        //{
-            
-        //}
+        public static void RegisterRoles()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var RoleManager = new RoleManager<IdentityRole>(
+                        new RoleStore<IdentityRole>(context));
+                if (!RoleManager.RoleExists("Operator"))
+                {
+                    RoleManager.Create(new IdentityRole("Operator"));
+                }
+                if (!RoleManager.RoleExists("Owner"))
+                {
+                    RoleManager.Create(new IdentityRole("Owner"));
+                }
+            }
+        }
     }
 }

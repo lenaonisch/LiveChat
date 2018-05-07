@@ -22,19 +22,9 @@ namespace LiveChat
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-            Logger.Path = Path.Combine(Server.MapPath("~"), "Log.txt");
-            //Logger.Start();
-            //IdentityOperations.RegisterRoles();
-            var RoleManager = new RoleManager<IdentityRole>(
-                    new RoleStore<IdentityRole>(new ApplicationDbContext()));
-            if (!RoleManager.RoleExists("Operator"))
-            {
-                RoleManager.Create(new IdentityRole("Operator"));
-            }
-            if (!RoleManager.RoleExists("Owner"))
-            {
-                RoleManager.Create(new IdentityRole("Owner"));
-            }
+
+            IdentityOperations.RegisterRoles();
+            
         }
 
         public static string GetCentralChatHub()

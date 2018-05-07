@@ -21,6 +21,7 @@ var f1=function(e){
     // Reference the auto-generated proxy for the hub.
     $.connection.hub.url = CentralChatHub + '/signalr';
     var chat = $.connection.chatHub;
+	$.connection.hub.qs = "company=Default";
     // Create a function that the hub can call back to display messages.
     //RECEIVE
     chat.client.addNewMessageToPage = function (name, group, message) {

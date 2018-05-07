@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 namespace Log
@@ -6,12 +7,9 @@ namespace Log
 
    static class Logger
     {
-        private const bool isOn = false;
+        private const bool isOn = true;
 
-        public static string Path { get; set; }
-
-        private static StreamWriter sw;
-        private static FileStream f;
+        private static List<string> messages = new List<string>();
         private static object lockObj = new object();
 
         static Logger()
@@ -19,21 +17,12 @@ namespace Log
             
         }
 
-        public static void Start()
-        {
-            if(!isOn) return;
-            f = new FileStream(Path, FileMode.Create);
-            sw = new StreamWriter(f);
-        }
-
         public static void Clear()
         {
             if (!isOn) return;
             lock (lockObj)
             {
-                f.Close();
-                f = new FileStream(Path, FileMode.Create);
-                sw = new StreamWriter(f);
+                messages.Clear();
             }
         }
 
@@ -43,17 +32,11 @@ namespace Log
             string res = "";
             lock (lockObj)
             {
-                f.Close();
-                using (var f2 = new FileStream(Path, FileMode.Open))
+                foreach(var s in messages)
                 {
-                    using (StreamReader sr = new StreamReader(f2))
-                    {
-                        while (!sr.EndOfStream)
-                            res += sr.ReadLine() + "<br/>";
-                    }
+                    res += res + s + "<br/>";
                 }
-                f = new FileStream(Path, FileMode.Create);
-                sw = new StreamWriter(f);
+                Clear();
             }
             return res;
         }
@@ -61,19 +44,10 @@ namespace Log
         public static void LogMessage(string s)
         {
             if (!isOn) return;
-            if (f == null) Start();
             lock(lockObj)
             {
-                //instance.sw.WriteLineAsync(s).Wait();
-                sw.WriteLine(s);
-                Flush();
+                messages.Add(s);
             }
-        }
-
-        public static void Flush()
-        {
-            if (!isOn) return;
-            sw.Flush();
         }
 
     }

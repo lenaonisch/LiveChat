@@ -15,7 +15,7 @@ using LiveChat.Hubs;
 
 namespace LiveChat
 {
-    // [Authorize(Roles = "Operator")]
+
     public class ChatHub : Hub
     {
         /// <summary>
@@ -75,13 +75,6 @@ namespace LiveChat
         public void RegisterUser(string user)
         {
             string cId = Context.ConnectionId;
-
-            ////this code should be changed, when Identity is used
-            //if (user == "Operator")
-            //{
-            //    RegisterOperator(user);
-            //    return;
-            //}
 
             //lock (StaticData.lockobj)
             {
@@ -190,7 +183,6 @@ namespace LiveChat
 
         public override Task OnDisconnected(bool stopCalled)
         {
-
             if (stopCalled)
             {
                 // We know that Stop() was called on the client,
