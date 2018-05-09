@@ -52,6 +52,7 @@ var popoverOpen = function (e) {
     $.connection.hub.start().done(function () {
         console.log("Start connection");
         $('#sendmessage').click(function () {
+            if ($('#message').val() == "") return;
             // Call the Send method on the hub.
             //SEND
             chat.server.send($('#message').val());
@@ -62,7 +63,6 @@ var popoverOpen = function (e) {
         $('#StartChat').prop('disabled', false);
     });
 }
-
 
 function EmbedChat(CentralChatHub) {
     $("[data-toggle=popover]").popover({ html: true, container: "#LiveChatWrapper" });
@@ -94,5 +94,4 @@ $(function () {
         "    </div>"
     )).appendTo("." + window.ChatContainerName);
     EmbedChat(window.CentralChatHub);
-    //$('#sendmessage').prop('disabled', true);
 });
