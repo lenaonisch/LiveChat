@@ -193,11 +193,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\ChatHub.cs" />
-    <Compile Include="Hubs\IdentityOperations.cs" />
+    <Compile Include="Hubs\DatabaseOperations.cs" />
     <Compile Include="Hubs\StaticData.cs" />
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Strings\Strings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\app.component.css" />
@@ -315,6 +316,8 @@
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="tsconfig.json" />
     <Content Include="systemjs.config.js" />
+    <Content Include="Views\Account\RegisterOwner.cshtml" />
+    <Content Include="Views\Home\PrivateOffice.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

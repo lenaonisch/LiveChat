@@ -1,4 +1,5 @@
 ﻿using LiveChat.Extensions;
+using Models.ChatModels;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,14 +9,13 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.ChatModels
+namespace LiveChat
 {
     public static class StaticData
     {
 
         public static object lockobj = new object();
 
-        public const int SleepTime = 100;
 
         /// <summary>
         /// Last free RoomID
@@ -44,15 +44,14 @@ namespace Models.ChatModels
         public static ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>> UsersInGroups = new ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<Chat>>>();
 
         /// <summary>
+        /// Connects username and groupname. The key is the groupID, the value is user profiles
+        /// </summary>
+        public static ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<UserProfile>>> GroupsForUsers = new ConcurrentDictionary<Company, ConcurrentDictionary<string, HashSet<UserProfile>>>(); 
+
+        /// <summary>
         /// Connects ConnectionId  and UserProfile. The key is the ConnectionId, the value is the UserProfile 
         /// </summary>
-        public static ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>> Users = new ConcurrentDictionary<Company, ConcurrentDictionary<string, UserProfile>>();
-
-        static StaticData()
-        {
-            Company c = new Company("Default");
-            AddCompany(c);
-        }
+        public static ConcurrentDictionary<string, UserProfile> Users = new ConcurrentDictionary<string, UserProfile>();
 
         /// <summary>
         /// Generate variables for company, when first chat visitor appears
@@ -65,7 +64,7 @@ namespace Models.ChatModels
                 string name = company.Name;
                 Companies.Add(name, company);
                 Groups.Add(company, new ConcurrentDictionary<string, Chat>());
-                Users.Add(company, new ConcurrentDictionary<string, UserProfile>());
+                GroupsForUsers.Add(company, new ConcurrentDictionary<string, HashSet<UserProfile>>());
                 UsersInGroups.Add(company, new ConcurrentDictionary<string, HashSet<Chat>>());
                 Operators.Add(company, new HashSet<UserProfile>());
             }
@@ -97,22 +96,12 @@ namespace Models.ChatModels
             return op;
         }
 
-        //public static void AddUser(Company company, string userName, string connectionID)
-        //{
-        //    if (Users[company].ContainsKey(connectionID) == false)
-        //    {
-        //        Users[company].TryAdd(connectionID, new UserProfile() { BaseUser = new BaseUser(userName, company, connectionID) });//Add to User parameter Identity values
-        //    }
-
-        //    string group = StaticData.GetRoomID().ToString();
-
-        //    //Adding group if it doesn't exist
-        //    if (Groups[company].ContainsKey(group) == false)
-        //    {
-        //        Groups[company].TryAdd(group, new Chat(group));
-        //    }
-
-        //}
+        public static void RemoveConnectionID(Company company, string connectionID)
+        {
+            Users.Remove(connectionID);
+            UsersInGroups[company].Remove(connectionID);
+            //Groups[company].Remove(connectionID);
+        }
 
         public static int GetRoomID()
         {

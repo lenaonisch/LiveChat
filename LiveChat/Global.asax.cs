@@ -23,7 +23,7 @@ namespace LiveChat
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            IdentityOperations.RegisterRoles();
+            DatabaseOperations.InitDatabaseData();
             
         }
 

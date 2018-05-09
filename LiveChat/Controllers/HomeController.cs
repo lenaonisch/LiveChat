@@ -43,6 +43,7 @@ namespace LiveChat.Controllers
         [Authorize(Roles = "Owner")]
         public ActionResult PrivateOffice()
         {
+            ViewBag.CompanyID = StaticData.Companies[HttpContext.User.Identity.Name].ID;
             return View();
         }
 

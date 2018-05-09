@@ -1,28 +1,36 @@
 ﻿@using Microsoft.AspNet.Identity
+@using LiveChat.Strings;
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
-    @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-  @{bool a = this.User.IsInRole("Operator");
-  }
-    @if (this.User.IsInRole("Operator"))
-    {
-        <li>@Html.ActionLink("Chat", "Chat", "Home", routeValues: null, htmlAttributes: new { id = "chatLink" })</li>
-    }
-        <li>
-            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
-        </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+        <ul class="nav navbar-nav navbar-right">
+
+            @if (this.User.IsInRole(Strings.RoleOperator))
+            {
+                <li>@Html.ActionLink("Operator Chat", "OperatorChat", "Home", routeValues: null, htmlAttributes: new { id = "chatLink" })</li>
+            }
+
+            @if (this.User.IsInRole(Strings.RoleOwner))
+            {
+                <li>@Html.ActionLink("Private Office", "PrivateOffice", "Home", routeValues: null, htmlAttributes: new { id = "chatLink" })</li>
+            }
+            <li>
+                @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        </ul>
     }
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        @if(StaticData.Companies.Count()>0){
+        <li>@Html.ActionLink("Register Operator", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        }
+        <li>@Html.ActionLink("Register Company", "RegisterOwner", "Account", routeValues: null, htmlAttributes: new { id = "registerOwnerLink" })</li>
         <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

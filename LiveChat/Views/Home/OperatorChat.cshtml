@@ -19,7 +19,6 @@
             </tr>
         </table>
     </div>
-
 </div>
 @section scripts {
     <!--Script references. -->
@@ -36,12 +35,14 @@
             // Create a function that the hub can call back to display messages.
             //RECEIVE
             chat.client.addNewMessageToPage = function (name, group, message) {
+                console.log("message: " + name + " " + group + " " + message);
                 // Add the message to the page.
                 $('#discussion' + group).append('<li><strong>' + htmlEncode(name)
                     + '</strong>: ' + htmlEncode(message) + '</li>');
             };
 
             chat.client.registerUserInRoom = function (group) {
+                console.log("Room " + group + " added");
                 var myform = $('#ChatsTable');
                 myform.find('tr').each(function () {
                     var trow = $(this);
@@ -51,6 +52,7 @@
             }
 
             chat.client.closeGroup = function (group) {
+                console.log("Room " + group + " removed");
                 document.getElementById("group" + group).remove();
             }
 

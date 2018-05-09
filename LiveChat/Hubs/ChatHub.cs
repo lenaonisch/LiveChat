@@ -12,149 +12,149 @@ using Models.ChatModels;
 using LiveChat.Extensions;
 using System.Security.Claims;
 using LiveChat.Hubs;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Models.ModelsMVC;
+using DB;
+using Microsoft.AspNet.SignalR.Client.Http;
 
 namespace LiveChat
 {
 
     public class ChatHub : Hub
     {
-        /// <summary>
-        /// Temporary variable to describe some company
-        /// </summary>
-        private static Company tmpComp;
-
 
         [Authorize(Roles = "Operator")]
         public void Send(string group, string message)
         {
-            BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
+            BaseUser bu = StaticData.Users[Context.ConnectionId].BaseUser;
             Clients.Group(group).addNewMessageToPage(bu.NickName, group, message).Wait();
-            StaticData.Groups[tmpComp][group].Messages.Add(new Message(message, bu, DateTime.Now));
+            StaticData.Groups[bu.Company][group].Messages.Add(new Message(message, bu, DateTime.Now));
         }
 
 
         public void Send(string message)
         {
-            BaseUser bu = StaticData.Users[tmpComp][Context.ConnectionId].BaseUser;
-            string group = StaticData.UsersInGroups[tmpComp][Context.ConnectionId].First().GroupID;
+            BaseUser bu = StaticData.Users[Context.ConnectionId].BaseUser;
+            string group = StaticData.UsersInGroups[bu.Company][Context.ConnectionId].First().GroupID;
             Clients.Group(group).addNewMessageToPage(bu.NickName, group, message).Wait();
-            StaticData.Groups[tmpComp][group].Messages.Add(new Message(message, bu, DateTime.Now));
+            StaticData.Groups[bu.Company][group].Messages.Add(new Message(message, bu, DateTime.Now));
         }
 
-        public void RegisterOperator(string user)
+        public void RegisterOperator(string user, Company company)
         {
             Logger.LogMessage("Operator register start");
-            UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, tmpComp, Context.ConnectionId) };
+            UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, company, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
-
             //lock (StaticData.lockobj)
             {
-                StaticData.UsersInGroups[tmpComp].Add(cId, chats);
-                StaticData.Users[tmpComp].Add(cId, op);
-                StaticData.Operators[tmpComp].LAdd(op);
+                StaticData.UsersInGroups[company].Add(cId, chats);
+                StaticData.Users.Add(cId, op);
+                StaticData.Operators[company].LAdd(op);
                 //if the operator is the first who enters chat - he should be added to all rooms
-                if (StaticData.Operators[tmpComp].Count == 1)
+                if (StaticData.Operators[company].Count == 1)
                 {
-                    ConcurrentDictionary<string, Chat> groups = StaticData.Groups[tmpComp];
-
+                    ConcurrentDictionary<string, Chat> groups = StaticData.Groups[company];
                     foreach (KeyValuePair<string, Chat> kvPair in groups)
                     {
                         string group = kvPair.Key;
-                        Chat chat = kvPair.Value;
-                        chats.LAdd(chat);
-                        Groups.Add(op.BaseUser.ConnectionID, group).Wait();
-                        Clients.Group(group).addNewMessageToPage(op.BaseUser.NickName, group, "joined room" + group).Wait();
-                        Clients.Caller.registerUserInRoom(group).Wait();
+                        JoinOperator(op, group, company);
                     }
                 }
             }
             Logger.LogMessage("Operator register end");
         }
 
-        public void RegisterUser(string user)
+        public void RegisterUser(string user, Company company)
         {
             string cId = Context.ConnectionId;
 
+            UserProfile up = new UserProfile() { BaseUser = new BaseUser(user, company, cId) };
             //lock (StaticData.lockobj)
             {
-                if (StaticData.Users[tmpComp].ContainsKey(cId) == false)
+                if (StaticData.Users.ContainsKey(cId) == false)
                 {
-                    StaticData.Users[tmpComp].Add(cId, new UserProfile() { BaseUser = new BaseUser(user, tmpComp, cId) });//Add to User parameter Identity values
+                    StaticData.Users.Add(cId, up);//Add to User parameter Identity values
                 }
 
                 string group = StaticData.GetRoomID().ToString();
-                Chat chat = new Chat(group, tmpComp);
+                Chat chat = new Chat(group, company);
+
                 //Adding group if it doesn't exist
-                //if (StaticData.Groups[tmpComp].ContainsKey(group) == false)
-                {
-                    StaticData.Groups[tmpComp].Add(group, chat);
-                }
+                StaticData.Groups[company].Add(group, chat);
 
                 //Adding user to group
-                //if (StaticData.UsersInGroups[tmpComp].ContainsKey(user) == false)
-                {
-                    StaticData.UsersInGroups[tmpComp].Add(cId, new HashSet<Chat>());
-                }
+                StaticData.UsersInGroups[company].Add(cId, new HashSet<Chat>());
 
-                //if (StaticData.UsersInGroups[tmpComp][user].Contains(StaticData.Groups[tmpComp][group]) == false)
-                {
-                    Groups.Add(cId, group).Wait();
-                    StaticData.UsersInGroups[tmpComp][cId].LAdd(chat);
-                }
+                Groups.Add(cId, group).Wait();
+                StaticData.UsersInGroups[company][cId].LAdd(chat);
+                StaticData.GroupsForUsers[company].Add(group, new HashSet<UserProfile>());
+                StaticData.GroupsForUsers[company][group].LAdd(up);
+
                 Logger.LogMessage("User " + user + " with ID " + cId + " enter to room " + group);
-                JoinOperator(group);
-                Clients.OthersInGroup(group).registerUserInRoom(group).Wait();
-                Clients.Group(group).addNewMessageToPage(user, group, "joined room" + group).Wait();
-
+                UserProfile op = StaticData.GetMostFreeOperator(company);
+                if (op != null)
+                {
+                    JoinOperator(op, group, company);
+                }
+                else
+                    Clients.Caller.blockUser();
             }
         }
 
-        public void RemoveUser(string connectionID)
+        public void RemoveUser(string connectionID, bool isOperator)
         {
             lock (StaticData.lockobj)
             {
                 Logger.LogMessage("Remove user with ID " + connectionID);
-                var userProfile = StaticData.Users[tmpComp][connectionID];
-                var userName = userProfile.BaseUser.NickName;
-                HashSet<Chat> chats = StaticData.UsersInGroups[tmpComp][connectionID];
-                
-                if (IdentityOperations.ContainsRole(Context.User.Identity, "Operator"))
+                if (StaticData.Users.ContainsKey(connectionID) == false)
                 {
-                    StaticData.Operators[tmpComp].LRemove(userProfile);
+                    Logger.LogMessage("User with ID= " + connectionID + " has already been removed");
+                    return;
                 }
-
-                StaticData.Users[tmpComp].Remove(connectionID);
-                StaticData.UsersInGroups[tmpComp].Remove(connectionID);
-                StaticData.Groups[tmpComp].Remove(connectionID);
+                var userProfile = StaticData.Users[connectionID];
+                var company = userProfile.BaseUser.Company;
+                var userName = userProfile.BaseUser.NickName;
+                HashSet<Chat> chats = StaticData.UsersInGroups[company][connectionID];
 
                 foreach (var chat in chats)
                 {
-                    Clients.Group(chat.GroupID).addNewMessageToPage(userName, chat.GroupID, "The room is closed").Wait();
-                    Clients.OthersInGroup(chat.GroupID).closeGroup(chat.GroupID).Wait();
-
-                    //Remove operator from room:
-                    var sel = StaticData.Operators[tmpComp].Where(op => { return StaticData.UsersInGroups[tmpComp][op.BaseUser.ConnectionID].Contains(chat); });
-                    if (sel.Count() > 0)
+                    Clients.Group(chat.GroupID).blockUser().Wait();
+                    Clients.Group(chat.GroupID).closeGroup(chat.GroupID).Wait();
+                    foreach (var user in StaticData.GroupsForUsers[company][chat.GroupID])
                     {
-                        var oper = sel.First().BaseUser;
-                        Groups.Remove(oper.ConnectionID, chat.GroupID).Wait();
-                        StaticData.UsersInGroups[tmpComp][oper.ConnectionID].LRemove(chat);
+                        Logger.LogMessage("User " + user.BaseUser.NickName + " is disconnected from group" + chat.GroupID);
+                        Clients.Group(chat.GroupID).addNewMessageToPage(user.BaseUser.NickName, chat.GroupID, "The room is closed").Wait();
+                        if (user.BaseUser.ConnectionID != connectionID)
+                        {
+                            Groups.Remove(user.BaseUser.ConnectionID, chat.GroupID).Wait();
+                            StaticData.UsersInGroups[company][user.BaseUser.ConnectionID].Remove(chat);
+                        }
+                        if (StaticData.Operators[company].Contains(user)) continue;
+                        StaticData.RemoveConnectionID(company, user.BaseUser.ConnectionID);
                     }
-                    Logger.LogMessage("User " + userName + " is disconnected from group" + chat.GroupID);
+                    StaticData.GroupsForUsers[company].Remove(chat.GroupID);
+                    StaticData.Groups[company].Remove(chat.GroupID);
+                }
+
+                if (isOperator)
+                {
+                    StaticData.Operators[company].LRemove(userProfile);
+                    StaticData.RemoveConnectionID(company, connectionID);
                 }
             }
         }
 
-        public void JoinOperator(string roomName)
+        protected void JoinOperator(UserProfile op, string roomName, Company company)
         {
-            UserProfile op = StaticData.GetMostFreeOperator(tmpComp);
-
-            if (op == null) return;
             Groups.Add(op.BaseUser.ConnectionID, roomName).Wait();
-            Chat chat = StaticData.Groups[tmpComp][roomName];
-            StaticData.UsersInGroups[tmpComp][op.BaseUser.ConnectionID].LAdd(chat);
+            Clients.Group(roomName).registerUserInRoom(roomName).Wait();
+            Chat chat = StaticData.Groups[company][roomName];
+            StaticData.UsersInGroups[company][op.BaseUser.ConnectionID].LAdd(chat);
+            StaticData.GroupsForUsers[company][roomName].LAdd(op);
             Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, "joined room" + roomName).Wait();
+            Clients.Group(roomName).unblockUser().Wait();
         }
 
 
@@ -162,15 +162,53 @@ namespace LiveChat
         {
             lock (StaticData.lockobj)
             {
-                //string name = Context.User.Identity.Name;
-                //if (name == "") name = DateTime.Now.ToString();
-                if (IdentityOperations.ContainsRole(Context.User.Identity, "Operator"))
-                    RegisterOperator(Context.User.Identity.Name);
-                //process situation when 2 users added in one moment of time(it seems to me, adding milliseconds will not solve the problem fully)
+                //Add Operator:
+                if (DatabaseOperations.ContainsRole(Context.User.Identity, "Operator"))
+                {
+                    Company company;
+                    using (var context = new ApplicationDbContext())
+                    {
+                        var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                        var user = UserManager.FindById(Context.User.Identity.GetUserId());
+                        var selCompanies = StaticData.Companies.Values.Where(c => c.ID == user.CompanyID);
+                        if (selCompanies.Count() == 0)
+                        {
+                            Logger.LogMessage("Error company ID for user " + user.UserName);
+                            return;
+                        }
+                        company = selCompanies.First();
+                    }
+                    RegisterOperator(Context.User.Identity.Name, company);
+                }
+                //Add simple User
                 else
                 {
+                    bool correctCompany = false;
                     string genName = DateTime.Now.ToString();
-                    RegisterUser(genName);
+                    string companyIDs = Context.QueryString["companyID"];
+                    if (companyIDs != null)
+                        try
+                        {
+                            int companyID = Convert.ToInt32(companyIDs);
+                            var sel = StaticData.Companies.Values.Where(c => c.ID == companyID);
+                            if (sel.Count() == 1)
+                            {
+                                var company = sel.First();
+                                RegisterUser(genName, company);
+                                correctCompany = true;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.LogMessage(e.Message);
+                        }
+
+                    if (!correctCompany)
+                    {
+                        Logger.LogMessage("Error company ID for user " + genName);
+                        Clients.Client(Context.ConnectionId).blockUser().Wait();
+                        return;
+                    }
                 }
             }
         }
@@ -183,34 +221,8 @@ namespace LiveChat
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            if (stopCalled)
-            {
-                // We know that Stop() was called on the client,
-                // and the connection shut down gracefully.
-                RemoveUser(this.Context.ConnectionId);
-
-
-            }
-            else
-            {
-                // This server hasn't heard from the client in the last ~35 seconds.
-                // If SignalR is behind a load balancer with scaleout configured, 
-                // the client may still be connected to another SignalR server.
-                RemoveUser(this.Context.ConnectionId);
-            }
+            RemoveUser(this.Context.ConnectionId, Context.User.IsInRole(Strings.Strings.RoleOperator));
             return base.OnDisconnected(stopCalled);
-        }
-
-        public override Task OnReconnected()
-        {
-            Logger.LogMessage("Reconnection used!!!");
-            AddConnection();
-            return base.OnReconnected();
-        }
-
-        public ChatHub()
-        {
-            tmpComp = StaticData.Companies.First().Value;
         }
     }
 }

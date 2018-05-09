@@ -5,36 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <div class="ChatContainer"></div>
-<script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="Scripts/jquery.signalR-2.2.3.min.js"></script>
-<script src="http://localhost:54160/signalr/hubs"></script>
-<script src="Scripts/LiveChat.js"></script>
-<script>
-window.CentralChatHub = "http://localhost:54160";
-window.wasChatOpen=false;
-            $(function () {
-                $($.parseHTML(
-        "<div id='LiveChatWrapper' class='card text-white bg-dark'>" +
-            "<button class='btn btn-lg btn-dark'" +
-            "        style='position:absolute; bottom:15px;'" +
-            "        data-placement='top'" +
-            "        id='StartChat'" +
-            "        data-toggle=popover" +
-            "        title='Live chat'" +
-            "        data-content= \"" +
-            "            <input type='text' id='message' />" +
-            "            <input type='button' id='sendmessage' value='Send' />" +
-            "            <dl id='discussion' style='height:200px; overflow-y: scroll'></dl>" +
-            "        \">Chat!" +
-    "    </button>" +
-    "    </div>"
-                )).appendTo(".ChatContainer");
-                EmbedChat(window.CentralChatHub);
-            });
-
-</script>  
-    
+	<script>
+		window.CentralChatHub = "http://localhost:54160";
+		window.CompanyID="1";
+		window.ChatContainerName="ChatContainer";           
+	</script>
+	<div class="ChatContainer"></div>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="http://localhost:54160/Scripts/jquery.signalR-2.2.3.min.js"></script>
+	<script src="http://localhost:54160/signalr/hubs"></script>
+	
+	<script src="file:///D:/C%23%20Projects/!Chat/!Branches/LiveChat/LiveChat/Scripts/LiveChat.js"></script>
+	<!--script src="http://localhost:54160/Scripts/LiveChat.js"></script-->
 </body>
 </html>
