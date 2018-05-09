@@ -17,7 +17,6 @@ namespace LiveChat.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
@@ -51,8 +50,11 @@ namespace LiveChat.Controllers
 @"</head>" +
 @"<body>" +
 @"	<script>" +
+@"      //Central hub url. Please don't change it."+
 @"		window.CentralChatHub = '" + MvcApplication.GetCentralChatHub() + "';" +
+@"      //Unique id of your company. Please don't change it." +
 @"		window.CompanyID='" + StaticData.Companies[HttpContext.User.Identity.Name].ID + "';" +
+@"      //Name of the div control where LiveChat should be embeded(you may change this name according to your site logics)" +
 @"		window.ChatContainerName='ChatContainer';" +
 @"	</script>" +
 @"	<div class='ChatContainer'></div>" +
