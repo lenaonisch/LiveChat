@@ -39,10 +39,10 @@
 
         if (listItems.Count > 0)
         {
-            var selList2 = new SelectList(listItems, listItems[0]);
+            var selList2 = new SelectList(listItems,listItems[0]);
             <div class="form-group">
                 <label id="SelCompLbl">Select Company ID:</label>
-                @Html.DropDownListFor(model => model.CompanyID, selList2, listItems[0])
+                @Html.DropDownListFor(model => model.CompanyID, selList2)
             </div>
         }
     }

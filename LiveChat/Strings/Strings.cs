@@ -24,5 +24,8 @@ namespace LiveChat.Strings
         public const string msgRoomClosed = "The chat room is closed. If you need to ask another question, please reopen this window";
         public const string msgJoinedRoom = " joined room ";
 
+        public const string msgUserName = "You";
+        public const string msgOperatorName = "Operator";
+
     }
 }

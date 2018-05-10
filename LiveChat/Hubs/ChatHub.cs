@@ -17,6 +17,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Models.ModelsMVC;
 using DB;
 using Microsoft.AspNet.SignalR.Client.Http;
+using LiveChat.Exceptions;
 
 namespace LiveChat
 {
@@ -27,17 +28,20 @@ namespace LiveChat
         [Authorize(Roles = "Operator")]
         public void Send(string group, string message)
         {
+            if (Convert.ToInt32(group).ToString() != group) throw new ChatHubException("Group number is invalid");
+            if (message == "") throw new ChatHubException("Message should not be empty");
             BaseUser bu = StaticData.Users[Context.ConnectionId].BaseUser;
-            Clients.Group(group).addNewMessageToPage(bu.NickName, group, message).Wait();
+            Clients.Group(group).addNewMessageToPage(Strings.Strings.msgOperatorName, group, message).Wait();
             StaticData.Groups[bu.Company][group].Messages.Add(new Message(message, bu, DateTime.Now));
         }
 
 
         public void Send(string message)
         {
+           if (message == "") throw new ChatHubException("Message should not be empty");
             BaseUser bu = StaticData.Users[Context.ConnectionId].BaseUser;
             string group = StaticData.UsersInGroups[bu.Company][Context.ConnectionId].First().GroupID;
-            Clients.Group(group).addNewMessageToPage(bu.NickName, group, message).Wait();
+            Clients.Group(group).addNewMessageToPage(Strings.Strings.msgUserName, group, message).Wait();
             StaticData.Groups[bu.Company][group].Messages.Add(new Message(message, bu, DateTime.Now));
         }
 
