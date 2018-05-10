@@ -125,7 +125,7 @@ namespace LiveChat
                     foreach (var user in StaticData.GroupsForUsers[company][chat.GroupID])
                     {
                         Logger.LogMessage("User " + user.BaseUser.NickName + " is disconnected from group" + chat.GroupID);
-                        Clients.Group(chat.GroupID).addNewMessageToPage(user.BaseUser.NickName, chat.GroupID, "The room is closed").Wait();
+                        Clients.Group(chat.GroupID).addNewMessageToPage(user.BaseUser.NickName, chat.GroupID, Strings.Strings.msgRoomClosed).Wait();
                         if (user.BaseUser.ConnectionID != connectionID)
                         {
                             Groups.Remove(user.BaseUser.ConnectionID, chat.GroupID).Wait();
@@ -153,7 +153,7 @@ namespace LiveChat
             Chat chat = StaticData.Groups[company][roomName];
             StaticData.UsersInGroups[company][op.BaseUser.ConnectionID].LAdd(chat);
             StaticData.GroupsForUsers[company][roomName].LAdd(op);
-            Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, "joined room" + roomName).Wait();
+            Clients.Group(roomName).addNewMessageToPage(op.BaseUser.NickName, roomName, Strings.Strings.msgJoinedRoom + roomName).Wait();
             Clients.Group(roomName).unblockUser().Wait();
         }
 

@@ -27,13 +27,13 @@ namespace LiveChat.Hubs
             using (var context = new ApplicationDbContext())
             {
                 var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                if (!RoleManager.RoleExists("Operator"))
+                if (!RoleManager.RoleExists(Strings.Strings.RoleOperator))
                 {
-                    RoleManager.Create(new IdentityRole("Operator"));
+                    RoleManager.Create(new IdentityRole(Strings.Strings.RoleOperator));
                 }
-                if (!RoleManager.RoleExists("Owner"))
+                if (!RoleManager.RoleExists(Strings.Strings.RoleOwner))
                 {
-                    RoleManager.Create(new IdentityRole("Owner"));
+                    RoleManager.Create(new IdentityRole(Strings.Strings.RoleOwner));
                 }
 
                 foreach(var company in context.Companies)

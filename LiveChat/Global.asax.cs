@@ -3,6 +3,7 @@ using LiveChat.Hubs;
 using Log;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,6 +19,7 @@ namespace LiveChat
     {
         protected void Application_Start()
         {
+            GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(300);
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

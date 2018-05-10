@@ -116,7 +116,6 @@
     <Compile Include="ChatModels\UserProfile.cs" />
     <Compile Include="ModelsMVC\AccountViewModels.cs" />
     <Compile Include="ModelsMVC\AppRole.cs" />
-    <Compile Include="ModelsMVC\AppRoleManager.cs" />
     <Compile Include="ModelsMVC\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
