@@ -43,64 +43,69 @@ namespace LiveChat
 
         public void RegisterOperator(string user, Company company)
         {
-            Logger.LogMessage("Operator register start");
+            Logger.LogMessage("Operator register start comnanyID=" + company.ID);
             UserProfile op = new UserProfile() { BaseUser = new BaseUser(user, company, Context.ConnectionId) };
             HashSet<Chat> chats = new HashSet<Chat>();
             string cId = Context.ConnectionId;
-            //lock (StaticData.lockobj)
+            if (StaticData.Users.ContainsKey(cId))
             {
-                StaticData.UsersInGroups[company].Add(cId, chats);
-                StaticData.Users.Add(cId, op);
-                StaticData.Operators[company].LAdd(op);
-                //if the operator is the first who enters chat - he should be added to all rooms
-                if (StaticData.Operators[company].Count == 1)
+                Logger.LogMessage("Trying to add operator for the second time");
+                return;
+            }
+
+            StaticData.UsersInGroups[company].Add(cId, chats);
+            StaticData.Users.Add(cId, op);
+            StaticData.Operators[company].LAdd(op);
+            //if the operator is the first who enters chat - he should be added to all rooms
+            if (StaticData.Operators[company].Count == 1)
+            {
+                ConcurrentDictionary<string, Chat> groups = StaticData.Groups[company];
+                foreach (KeyValuePair<string, Chat> kvPair in groups)
                 {
-                    ConcurrentDictionary<string, Chat> groups = StaticData.Groups[company];
-                    foreach (KeyValuePair<string, Chat> kvPair in groups)
-                    {
-                        string group = kvPair.Key;
-                        JoinOperator(op, group, company);
-                    }
+                    string group = kvPair.Key;
+                    JoinOperator(op, group, company);
                 }
             }
+
             Logger.LogMessage("Operator register end");
         }
 
         public void RegisterUser(string user, Company company)
         {
+            Logger.LogMessage("User register start");
             string cId = Context.ConnectionId;
-
-            UserProfile up = new UserProfile() { BaseUser = new BaseUser(user, company, cId) };
-            //lock (StaticData.lockobj)
+            if (StaticData.Users.ContainsKey(cId))
             {
-                if (StaticData.Users.ContainsKey(cId) == false)
-                {
-                    StaticData.Users.Add(cId, up);//Add to User parameter Identity values
-                }
-
-                string group = StaticData.GetRoomID().ToString();
-                Chat chat = new Chat(group, company);
-
-                //Adding group if it doesn't exist
-                StaticData.Groups[company].Add(group, chat);
-
-                //Adding user to group
-                StaticData.UsersInGroups[company].Add(cId, new HashSet<Chat>());
-
-                Groups.Add(cId, group).Wait();
-                StaticData.UsersInGroups[company][cId].LAdd(chat);
-                StaticData.GroupsForUsers[company].Add(group, new HashSet<UserProfile>());
-                StaticData.GroupsForUsers[company][group].LAdd(up);
-
-                Logger.LogMessage("User " + user + " with ID " + cId + " enter to room " + group);
-                UserProfile op = StaticData.GetMostFreeOperator(company);
-                if (op != null)
-                {
-                    JoinOperator(op, group, company);
-                }
-                else
-                    Clients.Caller.blockUser();
+                Logger.LogMessage("Trying to add user for the second time");
+                return;
             }
+            UserProfile up = new UserProfile() { BaseUser = new BaseUser(user, company, cId) };
+
+            StaticData.Users.Add(cId, up);//Add to User parameter Identity values
+
+            string group = StaticData.GetRoomID().ToString();
+            Chat chat = new Chat(group, company);
+
+            //Adding group if it doesn't exist
+            StaticData.Groups[company].Add(group, chat);
+
+            //Adding user to group
+            StaticData.UsersInGroups[company].Add(cId, new HashSet<Chat>());
+
+            Groups.Add(cId, group).Wait();
+            StaticData.UsersInGroups[company][cId].LAdd(chat);
+            StaticData.GroupsForUsers[company].Add(group, new HashSet<UserProfile>());
+            StaticData.GroupsForUsers[company][group].LAdd(up);
+
+            Logger.LogMessage("User " + user + " with ID " + cId + " enter to room " + group);
+            UserProfile op = StaticData.GetMostFreeOperator(company);
+            if (op != null)
+            {
+                JoinOperator(op, group, company);
+            }
+            else
+                Clients.Caller.blockUser();
+            Logger.LogMessage("User register end");
         }
 
         public void RemoveUser(string connectionID, bool isOperator)

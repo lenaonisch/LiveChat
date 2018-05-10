@@ -20,7 +20,7 @@ namespace LiveChat
     {
         protected void Application_Start()
         {
-            Database.SetInitializer(new ApplicationDBDropCreate());
+            //Database.SetInitializer(new ApplicationDBDropCreate());
 
             GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(300);
             AreaRegistration.RegisterAllAreas();

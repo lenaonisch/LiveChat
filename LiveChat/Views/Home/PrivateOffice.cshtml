@@ -10,7 +10,41 @@
 
 <h2>Html code for your site:</h2>
 
-@ViewBag.HtmlCode
+@{ 
+    List<string> htmlCode = new List<string>();
+
+    htmlCode.Add(@"<!DOCTYPE html>");
+    htmlCode.Add(@"<html> ");
+    htmlCode.Add(@"<head>");
+    htmlCode.Add(@"    <meta charset='utf-8' />");
+    htmlCode.Add(@"    <meta name='viewport' content='width=device-width, initial-scale=1.0'>");
+    htmlCode.Add(@"</head>");
+    htmlCode.Add(@"<body>");
+    htmlCode.Add(@"	<script>");
+    htmlCode.Add(@"      //Central hub url. Please don't change it.");
+    htmlCode.Add(@"		window.CentralChatHub = '" + MvcApplication.GetCentralChatHub() + "';");
+    htmlCode.Add(@"      //Unique id of your company. Please don't change it.");
+    htmlCode.Add(@"		window.CompanyID='" + ViewBag.CompanyID + "';");
+    htmlCode.Add(@"      //Name of the div control where LiveChat should be embeded(you may change this name according to your site logics)");
+    htmlCode.Add(@"		window.ChatContainerName='ChatContainer';");
+    htmlCode.Add(@"	</script>");
+    htmlCode.Add(@"	<div class='ChatContainer'></div>");
+    htmlCode.Add(@"	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>");
+    htmlCode.Add(@"	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>");
+    htmlCode.Add(@"	<script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>");
+    htmlCode.Add(@"	<script src='" + MvcApplication.GetCentralChatHub() + "/Scripts/jquery.signalR-2.2.3.min.js'></script>");
+    htmlCode.Add(@"	<script src='" + MvcApplication.GetCentralChatHub() + "/signalr/hubs'></script>");
+    htmlCode.Add(@"	<script src='" + MvcApplication.GetCentralChatHub() + "/Scripts/LiveChat.js'></script>");
+    htmlCode.Add(@"</body>");
+    htmlCode.Add(@"</html>");
+
+
+}
+
+@foreach(var s in htmlCode)
+{
+    @s<br/>
+}
 
 
 

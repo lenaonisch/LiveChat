@@ -34,7 +34,7 @@ namespace Log
             {
                 foreach(var s in messages)
                 {
-                    res += res + s + "<br/>";
+                    res += s + "<br/>";
                 }
                 Clear();
             }
