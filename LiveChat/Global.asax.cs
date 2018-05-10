@@ -6,6 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -19,6 +20,8 @@ namespace LiveChat
     {
         protected void Application_Start()
         {
+            Database.SetInitializer(new ApplicationDBDropCreate());
+
             GlobalHost.Configuration.ConnectionTimeout = TimeSpan.FromSeconds(300);
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
