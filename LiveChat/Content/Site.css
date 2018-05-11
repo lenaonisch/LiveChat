@@ -22,3 +22,8 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.chatButton{
+    width:100%;
+    border-radius:5px;
+}

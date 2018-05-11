@@ -4,14 +4,9 @@
     ViewBag.Title = "OperatorChat";
 }
 <h2>OperatorChat</h2>
-<input id="displayname" type="hidden" />
-<div>
-    <h7>Group</h7>
-    <input id="displaygroup" />
-</div>
+
+<input type="text" id="message" style="width:100%;" placeholder="Enter message" />
 <div class="container">
-    <input type="text" id="message" />
-    <input type="button" id="sendmessage" value="Send" />
     <div style="overflow-x:auto;">
         <table cellspacing="0" cellpadding="5" id="ChatsTable">
             <tr>
@@ -29,6 +24,9 @@
     <script src="~/signalr/hubs"></script>
     <!--SignalR script to update the chat page and send messages.-->
     <script>
+
+        
+
         $(function () {
             // Reference the auto-generated proxy for the hub.
             var chat = $.connection.chatHub;
@@ -46,8 +44,7 @@
                 var myform = $('#ChatsTable');
                 myform.find('tr').each(function () {
                     var trow = $(this);
-                    //var len = document.getElementById('ChatsTable').rows[0].cells.length;
-                    trow.append('<td id= "group'+group+'" width="100" valign="top"><ul id="discussion' + group + '"><h1>room' + group + '</h1></ul></td>');
+                    trow.append('<td id= "group' + group + '" width="100" valign="top"><button onclick="window.SendtoGroup(' + group + ')" style="width:100%">Send</button><ul id="discussion' + group + '"><h1>room' + group + '</h1></ul></td>');
                 });
             }
 
@@ -56,10 +53,17 @@
                 document.getElementById("group" + group).remove();
             }
 
+            window.SendtoGroup= function(group) {
+                // Call the Send method on the hub.
+                //SEND
+                chat.server.send(group, $('#message').val());
+                // Clear text box and reset focus for next comment.
+                $('#message').val('').focus();
+            }
+            
+
             // Get the user name and store it to prepend to messages.
-            //$('#displayname').val(prompt('Enter your name:', ''));
-            //$('#displaygroup').val(prompt('Enter groups names (separated with coma):', ''))
-            // Set initial focus to message input box.
+           // Set initial focus to message input box.
             $('#message').focus();
             // Start the connection.
             $.connection.hub.start().done(function () {
@@ -71,13 +75,6 @@
                     // Clear text box and reset focus for next comment.
                     $('#message').val('').focus();
                 });
-
-                //$('#registeruser').click(function () {
-                //    // Call the Send method on the hub.
-                //    chat.server.registerOperator($('#displayname').val(), $('#displaygroup').val());
-                //    // Clear text box and reset focus for next comment.
-                //    $('#message').focus();
-                //});
             });
         });
         // This optional function html-encodes messages for display in the page.

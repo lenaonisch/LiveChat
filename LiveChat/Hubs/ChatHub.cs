@@ -70,7 +70,6 @@ namespace LiveChat
                     JoinOperator(op, group, company);
                 }
             }
-
             Logger.LogMessage("Operator register end");
         }
 
